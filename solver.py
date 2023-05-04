@@ -102,12 +102,12 @@ def solverHU(file_path: str) -> None:
                             )
                         )
 
-    # Adicionar restrição para preencher todos os leitos
-    c5 = m.addConstrs(
-        gp.quicksum( x[i, j, k] for k in unities.dictBeds[j] \
-                        for j in unities.types \
-                            for i in patients )
-    )
+    # # Adicionar restrição para preencher todos os leitos
+    # c5 = m.addConstr(
+    #     gp.quicksum( x[i, j, k] for k in unities.dictBeds[j] \
+    #                     for j in unities.types \
+    #                         for i in patients ) == qtdBeds
+    # )
 
     #Execute
     m.optimize()
