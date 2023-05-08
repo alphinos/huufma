@@ -3,7 +3,7 @@ class Patient:
         self.survivingChance : int = chance
         self.priorities : dict = { "UTI" : pUTI, "UTSI" : pUTSI, "UTP" : pUTP }
         self.allocated : bool = False
-
+    
 class Unities:
     def __init__(self, uti : int, utsi : int, utp : int) -> None:
         self.types : list = [ "UTI", "UTSI", "UTP" ]
@@ -27,7 +27,7 @@ class Unities:
         for i in range( self.qtdTypes["UTP"] ):
             set.append("UTP_")
         return set
-    
+
     def getDictBed(self) -> dict:
         d = dict()
 
