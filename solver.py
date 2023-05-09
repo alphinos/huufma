@@ -11,7 +11,7 @@ def solverHU(file_path: str) -> None:
     print(qtdUti, qtdUtsi, qtdUtp)
 
     qtdBeds = qtdUti + qtdUtsi + qtdUtp
-    
+
     uti = Unity("UTI", qtdUti)
     utsi = Unity("UTSI", qtdUtsi)
     utp = Unity("UTP", qtdUtp)
@@ -130,91 +130,5 @@ def solverHU(file_path: str) -> None:
                 print( x[patient, bedType, bed].X)
                 countVars += 1
     print(qtdAlocated, totalChance, countVars)
-
-    # NonAllocPatients = [ p for p in patients if p.allocated == False]
-    # print([(p.survivingChance, p.priorities["UTI"], p.priorities["UTSI"], p.priorities["UTP"] )\
-    #         for p in NonAllocPatients])
-    # best = list()
-    # while (qtdAlocated < qtdBeds):
-    #     print(qtdAlocated, qtdUTI, qtdUTSI, qtdUTP)
-    #     best = [0, 0, 0, 0]
-    #     if qtdUTI < unities.qtdTypes["UTI"]:
-    #         print("UTI")
-    #         for patient in NonAllocPatients:
-    #             for bedType in unities.types:
-    #                 if patient.survivingChance * patient.priorities["UTI"] > best[0] \
-    #                     and patient.allocated == False:
-    #                     best[0] = patient.survivingChance * patient.priorities["UTI"]
-    #                     best[1] = patient
-    #         for bed in unities.dictBeds["UTI"]:
-    #             if x[best[1], "UTI", bed].X == 0 and answer[best[1], "UTI", bed] == 0:
-    #                 print(best[1].survivingChance)
-    #                 answer[best[1], "UTI", bed] = 1
-    #                 qtdUTI += 1
-    #                 qtdAlocated += 1
-    #                 totalChance += best[1].survivingChance
-    #                 NonAllocPatients.remove(best[1])
-    #                 break
-    #         print([(p.survivingChance, p.priorities["UTI"], p.priorities["UTSI"], p.priorities["UTP"] )\
-    #             for p in NonAllocPatients])
-    #         continue
-    #     if qtdUTSI < unities.qtdTypes["UTSI"]:
-    #         print("UTSI")
-    #         for patient in NonAllocPatients:
-    #             for bedType in unities.types:
-    #                 if patient.survivingChance * patient.priorities["UTSI"] > best[0] \
-    #                     and patient.allocated == False:
-    #                     best[0] = patient.survivingChance * patient.priorities["UTSI"]
-    #                     best[1] = patient
-    #         for bed in unities.dictBeds["UTSI"]:
-    #             if x[best[1], "UTSI", bed].X == 0 and answer[best[1], "UTSI", bed] == 0:
-    #                 print(best[1].survivingChance)
-    #                 answer[best[1], "UTSI", bed] = 1
-    #                 qtdUTSI += 1
-    #                 qtdAlocated += 1
-    #                 totalChance += best[1].survivingChance
-    #                 NonAllocPatients.remove(best[1])
-    #                 break
-    #         print([(p.survivingChance, p.priorities["UTI"], p.priorities["UTSI"], p.priorities["UTP"] )\
-    #             for p in NonAllocPatients])
-    #         continue
-    #     if qtdUTP < unities.qtdTypes["UTP"]:
-    #         print("UTP")
-    #         for patient in NonAllocPatients:
-    #             for bedType in unities.types:
-    #                 if patient.survivingChance * patient.priorities["UTP"] > best[0] \
-    #                     and patient.allocated == False:
-    #                     best[0] = patient.survivingChance * patient.priorities["UTP"]
-    #                     best[1] = patient
-    #         for bed in unities.dictBeds["UTP"]:
-    #             if x[best[1], "UTP", bed].X == 0 and answer[best[1], "UTP", bed] == 0:
-    #                 print(best[1].survivingChance)
-    #                 answer[best[1], "UTP", bed] = 1
-    #                 qtdUTP += 1
-    #                 qtdAlocated += 1
-    #                 totalChance += best[1].survivingChance
-    #                 NonAllocPatients.remove(best[1])
-    #                 break
-    #         print([(p.survivingChance, p.priorities["UTI"], p.priorities["UTSI"], p.priorities["UTP"] )\
-    #             for p in NonAllocPatients])
-    #         continue
-    # for patient in patients:
-    #     for bedType in unities.types:
-    #         for bed in unities.dictBeds[bedType]:
-    #             if answer[patient, bedType, bed] == 1:
-    #                 print(patient.survivingChance)
-    #                 print(patient.priorities["UTI"], patient.priorities["UTSI"], patient.priorities["UTP"])
-    #                 print(bedType, bed)
-
-    # countVars = 0
-    # for bedType in unities.types:
-    #     for bed in unities.dictBeds[bedType]:
-    #         for patient in patients:
-    #             print( answer[patient, bedType, bed], bedType, bed, patient)
-    #             countVars += 1
-    #         print()
-    #     print()
-    # print(qtdAlocated, totalChance, countVars)
-
 
 solverHU("Inst_Patients/Inst_0.txt")
