@@ -1,10 +1,5 @@
 from random import randint
 
-<<<<<<< HEAD
-from problem import Patient
-
-=======
->>>>>>> b3e40f6 (Simplificando o solver e reorganizando as pastas do projeto)
 def generateUnities():
     unities = list()
     for i in range(3):
@@ -36,11 +31,7 @@ def generatePatient():
     chance *= randint(1, 20) 
     if chance == 100:
         chance = 99
-<<<<<<< HEAD
-    patient = Patient(chance, uti, utsi, utp)
-=======
     patient = [chance, uti, utsi, utp]
->>>>>>> b3e40f6 (Simplificando o solver e reorganizando as pastas do projeto)
     return patient
 
 def generatePatientList(qtd_items: int):
@@ -72,11 +63,7 @@ def populateInstances(instances: list):
         appendToFile(instance, unities)
         patientList = generatePatientList(problem[0])
         for i in patientList:
-<<<<<<< HEAD
-            appendToFile(instance, f"{i.survivingChance} {i.priorities['UTI']} {i.priorities['UTSI']} {i.priorities['UTP']}")
-=======
             appendToFile(instance, f"{i[0]} {i[1]} {i[2]} {i[3]}")
->>>>>>> b3e40f6 (Simplificando o solver e reorganizando as pastas do projeto)
     
     closeAllFiles(instances)
 
