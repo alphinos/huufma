@@ -1,134 +1,108 @@
 import gurobipy as grbp
 from gurobipy import GRB
-from problem import *
 from utility import readData
 
-
 def solverHU(file_path: str) -> None:
-
-    lsPatients, qtdUti, qtdUtsi, qtdUtp, qtd_Patients = readData(file_path)
-
-    print(qtdUti, qtdUtsi, qtdUtp)
-
+    patients, qtdUti, qtdUtsi, qtdUtp, qtd_Patients = readData(file_path)
     qtdBeds = qtdUti + qtdUtsi + qtdUtp
 
-    uti = Unity("UTI", qtdUti)
-    utsi = Unity("UTSI", qtdUtsi)
-    utp = Unity("UTP", qtdUtp)
+    q = [ qtdUti, qtdUtsi, qtdUtp ]
 
-    typeSet = { "UTI", "UTSI", "UTP" }
+    print(f"uti : {qtdUti}, utsi: {qtdUtsi}, utp: {qtdUtp}, total de pacientes: {qtd_Patients}.")
+    print()
+    for p in patients:
+        print(*p)
 
-    qtdTypes = { "UTI" : qtdUti, "UTSI" : qtdUtsi, "UTP" : qtdUtp }
+    ls_uti = list( range(qtdUti) )
+    ls_utsi = list( range( qtdUti, qtdUti + qtdUtsi ) )
+    ls_utp = list( range( qtdUti + qtdUtsi, qtdBeds) )
 
-    unitiesSet = set() 
-    unitiesSet.update(uti.getBeds(), utsi.getBeds(), utp.getBeds())
+    K_Types = [ ls_uti, ls_utsi, ls_utp ]
+
+    print()
+    print("camas de uti:", *ls_uti)
+    print("camas de utsi:", *ls_utsi)
+    print("camas de utp:", *ls_utp)
+    print("conjunto de camas de cada tipo:", *K_Types)
     
-    patients = set()
-    for idx, item in enumerate(lsPatients):
-        patient = Patient( idx, item[0], item[1], item[2], item[3] )
-        patients.add(patient)
+    I = list( range(qtd_Patients) )
+    J = [0, 1, 2] # 0 = uti | 1 = utsi | 2 = utp
+    K = list( range(qtdBeds) )
 
-    unitiesDict = dict( [ ( "UTI", uti.getBeds() ), ( "UTSI", utsi.getBeds() ), ( "UTP", utp.getBeds() )] )
+    print()
+    print("pacientes:", *I )
+    print("tipos:", *J)
+    print("leitos:", *K)
 
     m = grbp.Model()
+    x = m.addVars(I, J, K, vtype = GRB.BINARY)
 
-    for p in patients:
-        print(p.getName())
-    print(typeSet)
-    print(unitiesSet)
+    #Objective function
+    sum_ = 0
+    for i in I:
+        for j in J:
+            for k in K_Types[j]:
+                sum_ += x[i, j, k] * patients[i][0]
 
-    x = m.addVars(patients, typeSet, unitiesSet, vtype = GRB.BINARY)
-
-    # Obective function
-    m.setObjective(
-        grbp.quicksum(
-            grbp.quicksum(
-                grbp.quicksum(
-                    x[i, j, k] * i.getSurvivingChance() for k in unitiesDict[j]
-                ) for j in typeSet
-            ) for i in patients
-        ),
-        sense = grbp.GRB.MAXIMIZE
-    )
+    m.setObjective( sum_, sense = grbp.GRB.MAXIMIZE )
 
     #Constraints
-    c1 = list()
-    for j in typeSet:
-        for k in unitiesDict[j]:
-            c1.append(
-                m.addConstr(
-                    grbp.quicksum( x[i, j, k] for i in patients ) <= 1
-                )
-            )
 
-    c2 = list()
-    for i in patients:
-        c2.append(
-            m.addConstr(
-                grbp.quicksum(
-                    grbp.quicksum( x[i, j, k] for k in unitiesDict[j]) \
-                        for j in typeSet
-                ) <= 1
-            )
-        )
+    # C1
+    for j in J:
+        for k in K_Types[j]:
+            sum_c1 = 0
+            for i in I:
+                sum_c1 += x[i, j, k]
+            
+            m.addConstr( sum_c1 <= 1 )
+    
+    # C2
+    for i in I:
+        sum_c2 = 0
+        for j in J:
+            for k in K_Types[j]:
+                sum_c2 += x[i, j, k]
+        
+        m.addConstr( sum_c2 <= 1 )
+    
+    # C3
+    for j in J:
+        sum_c3 = 0
+        for i in I:
+            for k in K_Types[j]:
+                sum_c3 += x[i, j, k]
+        m.addConstr( sum_c3 <= q[j] )
+    
+    # C4
+    for i1 in I:
+        for i2 in I:
+            if i1 == i2:
+                continue
+            for j in J:
+                for k in K_Types[j]:
 
-    c3 = list()
-    for j in typeSet:
-        c3.append(
-            m.addConstrs(
-            grbp.quicksum( x[i, j, k] for k in unitiesDict[j] ) <= qtdTypes[j] \
-                for i in patients
-            )
-        )
-
-    c4 =list()
-    for i1 in patients:
-        for i2 in patients:
-            for j in typeSet:
-                for k in unitiesDict[j]:
-                    if i1.getPriorities()[j] > i2.getPriorities()[j]:
-                        c4.append(m.addConstr(
+                    if patients[i1][1][j] > patients[i2][1][j]:
+                        m.addConstr(
                             x[i1, j, k] >= x[i2, j, k]
-                            )
                         )
-
+    
     #Execute
     m.optimize()
 
-    answer = dict()
-    qtdAlocated = 0
-    totalChance = 0
-
-    qtdUTI = 0
-    qtdUTSI = 0
-    qtdUTP = 0
-
-    for bedType in typeSet:
-        for bed in unitiesDict[bedType]:
-            for patient in patients:
-                if x[patient, bedType, bed].X == 1:
-                    answer[patient, bedType, bed] = 1
-                    totalChance += patient.getSurvivingChance()
-                    qtdAlocated += 1
-                    patient.allocated = True
-                    if bedType == "UTI":
-                        qtdUTI += 1
-                    elif bedType == "UTSI":
-                        qtdUTSI += 1
-                    elif bedType == "UTP":
-                        qtdUTP += 1
-                    print(patient.getSurvivingChance())
-                    print(patient.getPriorities()["UTI"], patient.getPriorities()["UTSI"], patient.getPriorities()["UTP"])
-                    print(bedType, bed)
-                else:
-                    answer[patient, bedType, bed] = 0
-
-    countVars = 0
-    for patient in patients:
-        for bedType in typeSet:
-            for bed in unitiesDict[bedType]:
-                print( x[patient, bedType, bed].X)
-                countVars += 1
-    print(qtdAlocated, totalChance, countVars)
+    qtd_Alocated = 0
+    total_Chance = 0
+    print()
+    for j in J:
+        for k in K_Types[j]:
+            for i in I:
+                if x[i, j, k].X == 1:
+                    print(f"Paciente_{i} - {patients[i][0]}, tipo : {j}, cama_{j}__{k}")
+                    qtd_Alocated += 1
+                    total_Chance += patients[i][0]
+    
+    print()
+    print(f"Quantidade de pacientes alocados: {qtd_Alocated}, Chance total: {total_Chance}")
+    print(f"Total de camas: {qtdBeds}, total de pacientes: {qtd_Patients}")
 
 solverHU("Inst_Patients/Inst_0.txt")

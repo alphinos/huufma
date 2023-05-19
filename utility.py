@@ -16,7 +16,7 @@ def readData(file_name: str):
     lsPatients = list()
     for row in rows:
         [Pi, Pi0, Pi1, Pi2] = map(int, row.strip().split())
-        lsPatients.append( [Pi, Pi0, Pi1, Pi2] )
+        lsPatients.append( [ Pi, [ Pi0, Pi1, Pi2 ] ] )
     
     uti = unities[0]
     utsi = unities[1]
