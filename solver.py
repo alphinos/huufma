@@ -35,7 +35,7 @@ def solverHU(file_path: str) -> None:
     print("leitos:", *K)
 
     m = grbp.Model()
-    x = m.addVars(I, J, K, vtype = GRB.BINARY)
+    x = m.addVars(qtd_Patients, 3, qtdBeds, vtype = GRB.BINARY)
 
     #Objective function
     sum_ = 0
