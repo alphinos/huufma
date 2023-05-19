@@ -81,7 +81,10 @@ def solverHU(file_path: str) -> None:
                 continue
             for j in J:
                 for k in K_Types[j]:
-
+                    # Cada item de patients é uma lista
+                    # Na posição 0, está a chance de sobrevivência
+                    # Na posição 1, está uma lista com as prioridades de cada paciente
+                    # para cada tipo de leito
                     if patients[i1][1][j] > patients[i2][1][j]:
                         m.addConstr(
                             x[i1, j, k] >= x[i2, j, k]
@@ -97,12 +100,19 @@ def solverHU(file_path: str) -> None:
         for k in K_Types[j]:
             for i in I:
                 if x[i, j, k].X == 1:
-                    print(f"Paciente_{i} - {patients[i][0]}, tipo : {j}, cama_{j}__{k}")
+                    print(f"Paciente_{i}, tipo : {j}, cama_{j}__{k}")
+                    print(f"Chance de sobrevivência: {patients[i][0]}, prioridades: {patients[i][1]}\n")
                     qtd_Alocated += 1
                     total_Chance += patients[i][0]
     
     print()
+    print("Tipo de uti: 0")
+    print("Tipo de utsi: 1")
+    print("Tipo de utp: 2")
+
+    print()
     print(f"Quantidade de pacientes alocados: {qtd_Alocated}, Chance total: {total_Chance}")
-    print(f"Total de camas: {qtdBeds}, total de pacientes: {qtd_Patients}")
+    print(f"Total de camas: {qtdBeds}")
+    print(f"uti : {qtdUti}, utsi: {qtdUtsi}, utp: {qtdUtp}, total de pacientes: {qtd_Patients}.")
 
 solverHU("Inst_Patients/Inst_0.txt")
