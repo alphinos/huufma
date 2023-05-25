@@ -89,22 +89,6 @@ def solverHU(file_path: str) -> None:
                 sum_c3 += x[i, j, k]
         m.addConstr( sum_c3 <= q[j] )
     
-    # C4
-    # for i1 in I:
-    #     for i2 in I:
-    #         if i1 == i2:
-    #             continue
-    #         for j in J:
-    #             for k in K_Types[j]:
-    #                 # Cada item de patients é uma lista
-    #                 # Na posição 0, está a chance de sobrevivência
-    #                 # Na posição 1, está uma lista com as prioridades de cada paciente
-    #                 # para cada tipo de leito
-    #                 if patients[i1][1][j] > patients[i2][1][j]:
-    #                     m.addConstr(
-    #                         x[i1, j, k] >= x[i2, j, k]
-    #                     )
-    
     #Execute
     m.optimize()
 
